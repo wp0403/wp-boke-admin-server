@@ -23,6 +23,21 @@ module.exports = appInfo => {
     threshold: 1024, // 小于 1k 的响应体不压缩
   };
 
+  // 安全配置 （https://eggjs.org/zh-cn/core/security.html）
+  config.security = {
+    csrf: {
+      enable: false,
+      ignoreJSON: true,
+    },
+    // 允许访问接口的白名单
+    domainWhiteList: [ 'http://localhost:3000' ],
+  };
+  // 跨域配置
+  config.cors = {
+    origin: '*',
+    allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH',
+  };
+
   // add your user config here
   const userConfig = {
     // myAppName: 'egg',
@@ -34,7 +49,7 @@ module.exports = appInfo => {
         // 端口号
         port: '22520',
         // 用户名
-        user: 'readOnly',
+        user: 'admin',
         // 密码
         password: 'Wp201314',
         // 数据库名

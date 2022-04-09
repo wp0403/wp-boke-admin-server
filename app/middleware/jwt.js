@@ -4,11 +4,12 @@
  * @version: 1.1.1
  * @Author: 张三
  * @Date: 2021-07-10 11:32:33
- * @LastEditors: WangPeng
- * @LastEditTime: 2022-04-08 10:47:56
+ * @LastEditors: 王鹏
+ * @LastEditTime: 2022-04-09 17:44:52
  */
 const whiteList = [ '/login' ];
 const jwt = require('jsonwebtoken');
+
 module.exports = () => {
   return async (ctx, next) => {
     if (whiteList.some(item => ctx.request.url.includes(item))) {
@@ -19,11 +20,11 @@ module.exports = () => {
     const token = ctx.request.header.authorization;
 
     if (!token) {
+      ctx.status = 401;
       ctx.body = {
         code: 401,
-        msg: '没有访问权限',
+        msg: '请登陆后再进行操作',
       };
-      ctx.status = 401;
       return;
     }
 
@@ -32,9 +33,10 @@ module.exports = () => {
       ctx.userInfo = userInfo;
       await next();
     } catch (e) {
+      ctx.status = 402;
       ctx.body = {
-        code: 500,
-        msg: '校验失败',
+        code: 402,
+        msg: '登录状态已过期',
         error: e,
       };
       return;
