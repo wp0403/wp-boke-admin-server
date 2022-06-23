@@ -11,7 +11,8 @@
     "egg-mysql": "^3.1.0",
     "egg-scripts": "^2.11.0",
     "jsonwebtoken": "^8.5.1",
-    "md5-node": "^1.0.1"
+    "md5-node": "^1.0.1",
+    "svg-captcha": "^1.4.0"
   },
   "devDependencies": {
     "autod": "^3.0.1",
@@ -26,9 +27,9 @@
     "node": ">=10.0.0"
   },
   "scripts": {
-    "start": "egg-scripts start --daemon --title=egg-server-wp-boke-admin-server",
+    "start": "egg-scripts start  --port 7002 --daemon --title=egg-server-wp-boke-admin-server",
     "stop": "egg-scripts stop --title=egg-server-wp-boke-admin-server",
-    "dev": "egg-bin dev",
+    "dev": "egg-bin dev --port 7002",
     "debug": "egg-bin debug",
     "test": "npm run lint -- --fix && npm run test-local",
     "test-local": "egg-bin test",

@@ -4,10 +4,10 @@
  * @version: 1.1.1
  * @Author: 张三
  * @Date: 2021-07-10 11:32:33
- * @LastEditors: 王鹏
- * @LastEditTime: 2022-04-09 17:44:52
+ * @LastEditors: WangPeng
+ * @LastEditTime: 2022-06-20 16:26:43
  */
-const whiteList = [ '/login' ];
+const whiteList = [ '/vcode', '/login' ];
 const jwt = require('jsonwebtoken');
 
 module.exports = () => {
@@ -16,7 +16,6 @@ module.exports = () => {
       await next();
       return;
     }
-
     const token = ctx.request.header.authorization;
 
     if (!token) {
@@ -30,7 +29,7 @@ module.exports = () => {
 
     try {
       const userInfo = jwt.verify(token, 'wp0403');
-      ctx.userInfo = userInfo;
+      ctx.session.userInfo = userInfo;
       await next();
     } catch (e) {
       ctx.status = 402;
