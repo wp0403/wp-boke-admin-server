@@ -4,16 +4,17 @@
  * @Author: WangPeng
  * @Date: 2022-06-21 11:10:33
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-06-23 17:43:22
+ * @LastEditTime: 2022-06-24 16:49:30
  */
 'use strict';
 
 const Service = require('egg').Service;
 
 class SecretService extends Service {
+  // 获取列表数据
   async getList(obj) {
     // 解构参数time_str,
-    const { author, type, content, page = 1, page_size = 10 } = obj;
+    const { author, type, content, sortKey = 'isTop', sortOrder = 'desc', page = 1, page_size = 10 } = obj;
 
     let sql = 'select * from secretList';
     let num = 'select count(*) from secretList';
@@ -54,17 +55,6 @@ class SecretService extends Service {
       cont.push(type);
       isMore = true;
     }
-    // if (time_str) {
-    //   if (isMore) { // true代表有多个参数
-    //     sql += 'and time_str IN ?';// and是两个条件都必须满足，or是或的关系
-    //     num += 'and time_str IN ?';
-    //   } else {
-    //     sql += ' WHERE time_str IN ?';
-    //     num += ' WHERE time_str IN ?';
-    //   }
-    //   cont.push(time_str);
-    //   isMore = true;
-    // }
 
     if (isMore) { // true代表有多个参数
       sql += 'and isDelete != ?';// and是两个条件都必须满足，or是或的关系
@@ -74,6 +64,11 @@ class SecretService extends Service {
       num += ' WHERE isDelete != ?';
     }
     cont.push(1);
+
+    // 开启排序
+    if (sortKey && sortOrder) {
+      sql += ` order by ${sortKey} ${sortOrder}`;
+    }
 
     // 开启分页
     if (page || page_size) {
@@ -99,6 +94,15 @@ class SecretService extends Service {
         total: secretListNum[0]['count(*)'],
       },
     };
+  }
+  // 是否置顶事件
+  async isTopFun(obj) {
+    const { id, isTop } = obj;
+
+    // 查找对应的数据
+    const result = await this.app.mysql.update('secretList', { id, isTop: isTop ? 1 : 0 }); // 更新 secretList 表中的记录
+    // 判断更新成功
+    return result.affectedRows === 1;
   }
 }
 
