@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-06-21 11:10:33
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-06-24 16:49:30
+ * @LastEditTime: 2022-06-27 11:11:47
  */
 'use strict';
 
@@ -14,7 +14,7 @@ class SecretService extends Service {
   // 获取列表数据
   async getList(obj) {
     // 解构参数time_str,
-    const { author, type, content, sortKey = 'isTop', sortOrder = 'desc', page = 1, page_size = 10 } = obj;
+    const { author, type, content, sortKey = 'isTop', isDelete = 1, sortOrder = 'desc', page = 1, page_size = 10 } = obj;
 
     let sql = 'select * from secretList';
     let num = 'select count(*) from secretList';
@@ -63,7 +63,7 @@ class SecretService extends Service {
       sql += ' WHERE isDelete != ?';
       num += ' WHERE isDelete != ?';
     }
-    cont.push(1);
+    cont.push(isDelete);
 
     // 开启排序
     if (sortKey && sortOrder) {

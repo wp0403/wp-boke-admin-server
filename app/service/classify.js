@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-06-21 11:10:33
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-06-23 17:05:11
+ * @LastEditTime: 2022-06-27 13:33:11
  */
 'use strict';
 
@@ -13,7 +13,7 @@ const Service = require('egg').Service;
 class ClassifyService extends Service {
   async getList(obj) {
     // 解构参数
-    const { title, classify_id, classify_sub_id, desc, author, page = 1, page_size = 10 } = obj;
+    const { title, classify_id, classify_sub_id, desc, isDelete = 1, author, page = 1, page_size = 10 } = obj;
 
     let sql = 'select * from Bowen';
     let num = 'select count(*) from Bowen';
@@ -84,7 +84,7 @@ class ClassifyService extends Service {
       sql += ' WHERE isDelete != ?';
       num += ' WHERE isDelete != ?';
     }
-    content.push(1);
+    content.push(isDelete);
 
     // 开启分页
     if (page || page_size) {
@@ -110,6 +110,24 @@ class ClassifyService extends Service {
         total: bowenListNum[0]['count(*)'],
       },
     };
+  }
+  // 是否精选事件
+  async isSelectedFun(obj) {
+    const { id, selected } = obj;
+
+    // 查找对应的数据
+    const result = await this.app.mysql.update('Bowen', { id, selected: selected ? 1 : 0 }); // 更新 Bowen 表中的记录
+    // 判断更新成功
+    return result.affectedRows === 1;
+  }
+  // 是否放入回收站
+  async delBowenList(obj) {
+    const { id, isDelete } = obj;
+
+    // 查找对应的数据
+    const result = await this.app.mysql.update('Bowen', { id, isDelete: isDelete ? 1 : 0 }); // 更新 Bowen 表中的记录
+    // 判断更新成功
+    return result.affectedRows === 1;
   }
 }
 
