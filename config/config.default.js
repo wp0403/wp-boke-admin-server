@@ -30,7 +30,7 @@ module.exports = appInfo => {
       ignoreJSON: true,
     },
     // 允许访问接口的白名单
-    domainWhiteList: [ 'http://localhost:4000' ],
+    domainWhiteList: [ 'http://localhost:4000', 'https://admin.wp-boke.work' ],
   };
   // 跨域配置
   config.cors = {
