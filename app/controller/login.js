@@ -4,7 +4,7 @@
  * @Author: 王鹏
  * @Date: 2022-04-08 23:05:36
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-06-20 16:07:04
+ * @LastEditTime: 2022-06-30 18:00:23
  */
 'use strict';
 
@@ -42,7 +42,7 @@ class LoginController extends Controller {
       return;
     }
 
-    const { type, data, auth } = await this.service.login.getUser({
+    const { type, data, auth, dict } = await this.service.login.getUser({
       username,
       password: md5(password),
     });
@@ -53,10 +53,14 @@ class LoginController extends Controller {
         3600
       );
 
+      if (dict) {
+        // eslint-disable-next-line
+        Object.keys(dict).map(item => dict[item] = eval('(' + dict[item] + ')'));
+      }
       ctx.body = {
         code: 200,
         data,
-        meta: { token, auth },
+        meta: { token, auth, dict },
       };
     } else {
       ctx.body = {

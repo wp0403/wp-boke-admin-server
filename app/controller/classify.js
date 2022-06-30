@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-06-21 11:09:45
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-06-27 13:31:28
+ * @LastEditTime: 2022-06-30 14:51:44
  */
 'use strict';
 
@@ -69,6 +69,36 @@ class ClassifyController extends Controller {
         msg: '操作失败',
       };
     });
+  }
+  // 获取博文详情数据
+  async getClassifyDetails() {
+    const { ctx } = this;
+
+    const { id } = ctx.request.query;
+
+    if (!id) {
+      // eslint-disable-next-line no-return-assign
+      return ctx.body = {
+        code: 304,
+        msg: '缺失详情id',
+      };
+    }
+
+    try {
+      const classifyList = await ctx.service.classify._getClassifyDetails(id);
+
+      ctx.body = {
+        code: 200,
+        msg: '博文详情数据获取成功',
+        data: classifyList,
+      };
+    } catch (e) {
+      ctx.body = {
+        code: 305,
+        msg: '博文详情数据获取失败',
+        // data: e,
+      };
+    }
   }
 }
 
