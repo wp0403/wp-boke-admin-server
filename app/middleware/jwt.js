@@ -5,7 +5,7 @@
  * @Author: 张三
  * @Date: 2021-07-10 11:32:33
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-06-20 16:26:43
+ * @LastEditTime: 2022-07-05 14:31:08
  */
 const whiteList = [ '/vcode', '/login' ];
 const jwt = require('jsonwebtoken');

@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-06-21 11:09:45
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-06-30 14:51:44
+ * @LastEditTime: 2022-07-05 18:04:13
  */
 'use strict';
 
@@ -96,6 +96,43 @@ class ClassifyController extends Controller {
       ctx.body = {
         code: 305,
         msg: '博文详情数据获取失败',
+        // data: e,
+      };
+    }
+  }
+  // 更新博文详情数据
+  async putClassifyDetails() {
+    const { ctx } = this;
+
+    const obj = ctx.request.body;
+
+    if (!obj) {
+      // eslint-disable-next-line no-return-assign
+      return ctx.body = {
+        code: 304,
+        msg: '缺失详情数据',
+      };
+    }
+
+    try {
+      const isEdit = await ctx.service.classify._putClassifyDetails(obj);
+
+      if (isEdit) {
+        ctx.body = {
+          code: 200,
+          msg: '博文详情数据修改成功',
+        };
+      } else {
+        ctx.body = {
+          code: 305,
+          msg: '博文详情数据修改失败',
+          // data: e,
+        };
+      }
+    } catch (e) {
+      ctx.body = {
+        code: 305,
+        msg: '博文详情数据修改失败',
         // data: e,
       };
     }
