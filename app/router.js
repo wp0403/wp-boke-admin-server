@@ -12,9 +12,11 @@ module.exports = app => {
   router.put('/delBowenList', controller.classify.delBowenList); // 将博文放入回收站的接口
   router.get('/getClassifyDetails', controller.classify.getClassifyDetails); // 获取博文详情
   router.put('/putClassifyDetails', controller.classify.putClassifyDetails); // 更新博文详情
+  router.post('/createClassifyDetails', controller.classify.createClassifyDetails); // 新增博文
   router.get('/getItineraryList', controller.itinerary.getList); // 获取旅行日记列表接口
   router.get('/getSecretList', controller.secret.getList); // 获取树洞列表接口
   router.put('/changeSecretIsTop', controller.secret.isTopFun); // 修改树洞的置顶接口
   router.get('/sts', controller.cosServer.index); // 获取腾讯云cos签名
   router.get('/stsCosKey', controller.cosServer.getCosKey); // 获取腾讯云cos的用户密钥
+  router.get('/searchUserList', controller.user.searchUserList); // 根据关键字查询用户列表
 };

@@ -1,10 +1,10 @@
 /*
- * @Descripttion:
+ * @Descripttion: cos后端临时密钥生成
  * @version:
  * @Author: WangPeng
  * @Date: 2022-07-04 17:30:40
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-07-05 17:46:13
+ * @LastEditTime: 2022-07-06 11:04:31
  */
 'use strict';
 

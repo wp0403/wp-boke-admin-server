@@ -1,10 +1,10 @@
 /*
- * @Descripttion:
+ * @Descripttion: 登陆注册
  * @version: 1.1.1
  * @Author: 王鹏
  * @Date: 2022-04-08 23:05:36
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-06-30 18:00:23
+ * @LastEditTime: 2022-07-06 11:04:04
  */
 'use strict';
 

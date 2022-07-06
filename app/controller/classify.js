@@ -1,16 +1,17 @@
 /*
- * @Descripttion:
+ * @Descripttion: 博文
  * @version:
  * @Author: WangPeng
  * @Date: 2022-06-21 11:09:45
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-07-05 18:04:13
+ * @LastEditTime: 2022-07-06 11:04:49
  */
 'use strict';
 
 const Controller = require('egg').Controller;
 
 class ClassifyController extends Controller {
+  // 获取博文列表
   async getList() {
     const { ctx } = this;
     // 解构参数
@@ -133,6 +134,43 @@ class ClassifyController extends Controller {
       ctx.body = {
         code: 305,
         msg: '博文详情数据修改失败',
+        // data: e,
+      };
+    }
+  }
+  // 新增博文
+  async createClassifyDetails() {
+    const { ctx } = this;
+
+    const obj = ctx.request.body;
+
+    if (!obj || !Object.keys(obj)) {
+      // eslint-disable-next-line no-return-assign
+      return ctx.body = {
+        code: 304,
+        msg: '缺失详情数据',
+      };
+    }
+
+    try {
+      const isEdit = await ctx.service.classify._createClassifyDetails(obj);
+
+      if (isEdit) {
+        ctx.body = {
+          code: 200,
+          msg: '新增博文成功',
+        };
+      } else {
+        ctx.body = {
+          code: 305,
+          msg: '新增博文失败',
+          // data: e,
+        };
+      }
+    } catch (e) {
+      ctx.body = {
+        code: 305,
+        msg: '新增博文失败',
         // data: e,
       };
     }
