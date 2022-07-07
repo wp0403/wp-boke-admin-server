@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-06-21 11:09:45
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-07-06 11:04:49
+ * @LastEditTime: 2022-07-07 18:14:13
  */
 'use strict';
 
@@ -87,12 +87,19 @@ class ClassifyController extends Controller {
 
     try {
       const classifyList = await ctx.service.classify._getClassifyDetails(id);
-
-      ctx.body = {
-        code: 200,
-        msg: '博文详情数据获取成功',
-        data: classifyList,
-      };
+      if (classifyList) {
+        ctx.body = {
+          code: 200,
+          msg: '博文详情数据获取成功',
+          data: classifyList,
+        };
+      } else {
+        ctx.body = {
+          code: 305,
+          msg: '该数据已过期',
+          // data: e,
+        };
+      }
     } catch (e) {
       ctx.body = {
         code: 305,
@@ -153,11 +160,12 @@ class ClassifyController extends Controller {
     }
 
     try {
-      const isEdit = await ctx.service.classify._createClassifyDetails(obj);
+      const data = await ctx.service.classify._createClassifyDetails(obj);
 
-      if (isEdit) {
+      if (data) {
         ctx.body = {
           code: 200,
+          data,
           msg: '新增博文成功',
         };
       } else {
