@@ -4,7 +4,7 @@
  * @Author: 王鹏
  * @Date: 2022-04-08 23:05:36
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-07-06 11:04:04
+ * @LastEditTime: 2022-07-07 14:44:22
  */
 'use strict';
 
@@ -48,14 +48,13 @@ class LoginController extends Controller {
     });
 
     if (type === 1) {
-      const token = ctx.helper.loginToken(
-        { username, password: md5(password) },
-        3600
-      );
+      const token = ctx.helper.loginToken({ username, userId: auth.id }, 7200);
 
       if (dict) {
-        // eslint-disable-next-line
-        Object.keys(dict).map(item => dict[item] = eval('(' + dict[item] + ')'));
+        Object.keys(dict).map(
+          // eslint-disable-next-line
+          item => (dict[item] = eval('(' + dict[item] + ')'))
+        );
       }
       ctx.body = {
         code: 200,
