@@ -4,7 +4,7 @@
  * @Author: 王鹏
  * @Date: 2022-04-09 16:18:28
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-06-30 17:59:00
+ * @LastEditTime: 2022-07-08 11:30:34
  */
 'use strict';
 
@@ -25,7 +25,7 @@ class UserService extends Service {
     const rolePermissionsItem = await this.app.mysql.get('role_permissions', { rid: roleItem.id });
     const permissionsItem = await this.app.mysql.select('permissions', { where: { id: rolePermissionsItem.pid.split(',') } });
     // 获取字典对象
-    const dictList = await this.app.mysql.get('dict_table', { id: 1 });
+    const dictList = await this.app.mysql.select('dictList');
     if (userItem.password === password) {
       delete userItem.password;
       return {

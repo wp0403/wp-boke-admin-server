@@ -4,7 +4,7 @@
  * @Author: 王鹏
  * @Date: 2022-04-08 23:05:36
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-07-07 14:44:22
+ * @LastEditTime: 2022-07-08 11:38:10
  */
 'use strict';
 
@@ -49,17 +49,17 @@ class LoginController extends Controller {
 
     if (type === 1) {
       const token = ctx.helper.loginToken({ username, userId: auth.id }, 7200);
-
+      const dictObj = {};
       if (dict) {
-        Object.keys(dict).map(
+        dict.forEach(
           // eslint-disable-next-line
-          item => (dict[item] = eval('(' + dict[item] + ')'))
+          item => (dictObj[item.key] = eval('(' + item.value + ')'))
         );
       }
       ctx.body = {
         code: 200,
         data,
-        meta: { token, auth, dict },
+        meta: { token, auth, dict: dictObj },
       };
     } else {
       ctx.body = {

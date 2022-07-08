@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-06-21 11:09:45
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-07-07 18:14:13
+ * @LastEditTime: 2022-07-08 11:07:46
  */
 'use strict';
 
@@ -15,9 +15,9 @@ class ClassifyController extends Controller {
   async getList() {
     const { ctx } = this;
     // 解构参数
-    const { title, classify_id, classify_sub_id, desc, isDelete, author, page, page_size } = ctx.request.query;
+    const { title, classify_id, classify_sub_id, desc, type, isDelete, author, page, page_size } = ctx.request.query;
 
-    await this.service.classify.getList({ title, classify_id, classify_sub_id, desc, isDelete, author, page, page_size }).then(data => {
+    await this.service.classify.getList({ title, classify_id, classify_sub_id, desc, type, isDelete, author, page, page_size }).then(data => {
       ctx.body = {
         code: 200,
         msg: '博文列表数据获取成功',

@@ -13,7 +13,7 @@ const Service = require('egg').Service;
 class ClassifyService extends Service {
   async getList(obj) {
     // 解构参数
-    const { title, classify_id, classify_sub_id, desc, isDelete = 1, author, page = 1, page_size = 10 } = obj;
+    const { title, classify_id, classify_sub_id, desc, isDelete = 1, type, author, page = 1, page_size = 10 } = obj;
 
     let sql = 'select * from Bowen';
     let num = 'select count(*) from Bowen';
@@ -45,22 +45,22 @@ class ClassifyService extends Service {
     }
     if (classify_id) {
       if (isMore) { // true代表有多个参数
-        sql += 'and classify_id IN ?';// and是两个条件都必须满足，or是或的关系
-        num += 'and classify_id IN ?';
+        sql += 'and classify_id IN (?)';// and是两个条件都必须满足，or是或的关系
+        num += 'and classify_id IN (?)';
       } else {
-        sql += ' WHERE classify_id IN ?';
-        num += ' WHERE classify_id IN ?';
+        sql += ' WHERE classify_id IN (?)';
+        num += ' WHERE classify_id IN (?)';
       }
       content.push(classify_id);
       isMore = true;
     }
     if (classify_sub_id) {
       if (isMore) { // true代表有多个参数
-        sql += 'and classify_sub_id IN ?';// and是两个条件都必须满足，or是或的关系
-        num += 'and classify_sub_id IN ?';
+        sql += 'and classify_sub_id IN (?)';// and是两个条件都必须满足，or是或的关系
+        num += 'and classify_sub_id IN (?)';
       } else {
-        sql += ' WHERE classify_sub_id IN ?';
-        num += ' WHERE classify_sub_id IN ?';
+        sql += ' WHERE classify_sub_id IN (?)';
+        num += ' WHERE classify_sub_id IN (?)';
       }
       content.push(classify_sub_id);
       isMore = true;
@@ -74,6 +74,17 @@ class ClassifyService extends Service {
         num += ' WHERE desc LIKE ?';
       }
       content.push('%' + desc + '%');
+      isMore = true;
+    }
+    if (type) {
+      if (isMore) { // true代表有多个参数
+        sql += 'and type IN (?)';// and是两个条件都必须满足，or是或的关系
+        num += 'and type IN (?)';
+      } else {
+        sql += ' WHERE type IN (?)';
+        num += ' WHERE type IN (?)';
+      }
+      content.push(type);
       isMore = true;
     }
 
