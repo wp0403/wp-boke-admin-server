@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-06-21 11:10:33
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-07-07 18:07:55
+ * @LastEditTime: 2022-07-14 17:44:43
  */
 'use strict';
 
@@ -148,6 +148,15 @@ class ClassifyService extends Service {
   async _putClassifyDetails(obj) {
     const result = await this.app.mysql.update('Bowen', obj);
 
+    // 判断更新成功
+    return result.affectedRows === 1;
+  }
+  // 修改博文审核状态
+  async _putClassifyToExamine(obj) {
+    const { id, type } = obj;
+
+    // 查找对应的数据
+    const result = await this.app.mysql.update('Bowen', { id, type: +type }); // 更新 Bowen 表中的记录
     // 判断更新成功
     return result.affectedRows === 1;
   }

@@ -12,6 +12,7 @@ module.exports = app => {
   router.put('/delBowenList', controller.classify.delBowenList); // 将博文放入回收站的接口
   router.get('/getClassifyDetails', controller.classify.getClassifyDetails); // 获取博文详情
   router.put('/putClassifyDetails', controller.classify.putClassifyDetails); // 更新博文详情
+  router.put('/putClassifyToExamine', controller.classify.putClassifyToExamine); // 修改博文审核状态
   router.post('/createClassifyDetails', controller.classify.createClassifyDetails); // 新增博文
   router.get('/getItineraryList', controller.itinerary.getList); // 获取旅行日记列表接口
   router.get('/getSecretList', controller.secret.getList); // 获取树洞列表接口
