@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-06-23 16:31:01
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-07-12 18:19:55
+ * @LastEditTime: 2022-07-15 10:18:55
  */
 'use strict';
 
@@ -96,6 +96,46 @@ class SecretController extends Controller {
         ctx.body = {
           code: 305,
           msg: '树洞详情数据修改失败',
+          // data: e,
+        };
+      }
+    } catch (e) {
+      ctx.body = {
+        code: 305,
+        msg: '树洞详情数据修改失败',
+        // data: e,
+      };
+    }
+  }
+  // 修改树洞审核状态
+  async putSecretToExamine() {
+    const { ctx } = this;
+
+    const { id, secretType } = ctx.request.body;
+
+    if (!id || !secretType) {
+      // eslint-disable-next-line no-return-assign
+      return (ctx.body = {
+        code: 304,
+        msg: '缺失数据',
+      });
+    }
+
+    try {
+      const isEdit = await ctx.service.secret._putSecretToExamine({
+        id,
+        secretType,
+      });
+
+      if (isEdit) {
+        ctx.body = {
+          code: 200,
+          msg: '树洞修改审核成功',
+        };
+      } else {
+        ctx.body = {
+          code: 305,
+          msg: '树洞修改审核失败',
           // data: e,
         };
       }

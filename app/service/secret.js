@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-06-21 11:10:33
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-07-12 18:18:59
+ * @LastEditTime: 2022-07-15 10:19:46
  */
 'use strict';
 
@@ -117,6 +117,15 @@ class SecretService extends Service {
   async _putSecretDetails(obj) {
     const result = await this.app.mysql.update('secretList', obj);
 
+    // 判断更新成功
+    return result.affectedRows === 1;
+  }
+  // 修改树洞审核状态
+  async _putSecretToExamine(obj) {
+    const { id, secretType } = obj;
+
+    // 查找对应的数据
+    const result = await this.app.mysql.update('secretList', { id, secretType: +secretType }); // 更新 Bowen 表中的记录
     // 判断更新成功
     return result.affectedRows === 1;
   }

@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-06-21 11:10:33
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-07-14 17:44:43
+ * @LastEditTime: 2022-07-15 10:05:20
  */
 'use strict';
 
@@ -13,12 +13,24 @@ const Service = require('egg').Service;
 class ClassifyService extends Service {
   async getList(obj) {
     // 解构参数
-    const { title, classify_id, classify_sub_id, desc, isDelete = 1, type, author, page = 1, page_size = 10 } = obj;
+    const {
+      title,
+      classify_id,
+      classify_sub_id,
+      desc,
+      isDelete = 1,
+      type,
+      sortKey = 'selected',
+      sortOrder = 'desc',
+      author,
+      page = 1,
+      page_size = 10,
+    } = obj;
 
     let sql = 'select * from Bowen';
     let num = 'select count(*) from Bowen';
-    const content = [];// 参数
-    let isMore = false;// 是否有多个查询参数
+    const content = []; // 参数
+    let isMore = false; // 是否有多个查询参数
     /**
      * @模糊查询-量大的时候效率低
      * select * from user where name like ? % 内容 %
@@ -33,8 +45,9 @@ class ClassifyService extends Service {
       isMore = true;
     }
     if (author) {
-      if (isMore) { // true代表有多个参数
-        sql += 'and author LIKE ?';// and是两个条件都必须满足，or是或的关系
+      if (isMore) {
+        // true代表有多个参数
+        sql += 'and author LIKE ?'; // and是两个条件都必须满足，or是或的关系
         num += 'and author LIKE ?';
       } else {
         sql += ' WHERE author LIKE ?';
@@ -44,8 +57,9 @@ class ClassifyService extends Service {
       isMore = true;
     }
     if (classify_id) {
-      if (isMore) { // true代表有多个参数
-        sql += 'and classify_id IN (?)';// and是两个条件都必须满足，or是或的关系
+      if (isMore) {
+        // true代表有多个参数
+        sql += 'and classify_id IN (?)'; // and是两个条件都必须满足，or是或的关系
         num += 'and classify_id IN (?)';
       } else {
         sql += ' WHERE classify_id IN (?)';
@@ -55,8 +69,9 @@ class ClassifyService extends Service {
       isMore = true;
     }
     if (classify_sub_id) {
-      if (isMore) { // true代表有多个参数
-        sql += 'and classify_sub_id IN (?)';// and是两个条件都必须满足，or是或的关系
+      if (isMore) {
+        // true代表有多个参数
+        sql += 'and classify_sub_id IN (?)'; // and是两个条件都必须满足，or是或的关系
         num += 'and classify_sub_id IN (?)';
       } else {
         sql += ' WHERE classify_sub_id IN (?)';
@@ -66,8 +81,9 @@ class ClassifyService extends Service {
       isMore = true;
     }
     if (desc) {
-      if (isMore) { // true代表有多个参数
-        sql += 'and desc LIKE ?';// and是两个条件都必须满足，or是或的关系
+      if (isMore) {
+        // true代表有多个参数
+        sql += 'and desc LIKE ?'; // and是两个条件都必须满足，or是或的关系
         num += 'and desc LIKE ?';
       } else {
         sql += ' WHERE desc LIKE ?';
@@ -77,8 +93,9 @@ class ClassifyService extends Service {
       isMore = true;
     }
     if (type) {
-      if (isMore) { // true代表有多个参数
-        sql += 'and type IN (?)';// and是两个条件都必须满足，or是或的关系
+      if (isMore) {
+        // true代表有多个参数
+        sql += 'and type IN (?)'; // and是两个条件都必须满足，or是或的关系
         num += 'and type IN (?)';
       } else {
         sql += ' WHERE type IN (?)';
@@ -88,8 +105,9 @@ class ClassifyService extends Service {
       isMore = true;
     }
 
-    if (isMore) { // true代表有多个参数
-      sql += 'and isDelete != ?';// and是两个条件都必须满足，or是或的关系
+    if (isMore) {
+      // true代表有多个参数
+      sql += 'and isDelete != ?'; // and是两个条件都必须满足，or是或的关系
       num += 'and isDelete != ?';
     } else {
       sql += ' WHERE isDelete != ?';
@@ -97,21 +115,22 @@ class ClassifyService extends Service {
     }
     content.push(isDelete);
 
+    // 开启排序
+    if (sortKey && sortOrder) {
+      sql += ` order by ${sortKey} ${sortOrder}`;
+    }
+
     // 开启分页
     if (page || page_size) {
-      const current = page;// 当前页码
-      const pageSize = page_size;// 一页展示多少条数据
+      const current = page; // 当前页码
+      const pageSize = page_size; // 一页展示多少条数据
       sql += ' limit ?,?';
       content.push((current - 1) * pageSize, parseInt(pageSize));
     }
 
-    const bowenList = await this.app.mysql.query(
-      sql, content
-    );
+    const bowenList = await this.app.mysql.query(sql, content);
 
-    const bowenListNum = await this.app.mysql.query(
-      num, content
-    );
+    const bowenListNum = await this.app.mysql.query(num, content);
 
     return {
       data: bowenList,
@@ -127,7 +146,10 @@ class ClassifyService extends Service {
     const { id, selected } = obj;
 
     // 查找对应的数据
-    const result = await this.app.mysql.update('Bowen', { id, selected: selected ? 1 : 0 }); // 更新 Bowen 表中的记录
+    const result = await this.app.mysql.update('Bowen', {
+      id,
+      selected: selected ? 1 : 0,
+    }); // 更新 Bowen 表中的记录
     // 判断更新成功
     return result.affectedRows === 1;
   }
@@ -136,7 +158,10 @@ class ClassifyService extends Service {
     const { id, isDelete } = obj;
 
     // 查找对应的数据
-    const result = await this.app.mysql.update('Bowen', { id, isDelete: isDelete ? 1 : 0 }); // 更新 Bowen 表中的记录
+    const result = await this.app.mysql.update('Bowen', {
+      id,
+      isDelete: isDelete ? 1 : 0,
+    }); // 更新 Bowen 表中的记录
     // 判断更新成功
     return result.affectedRows === 1;
   }
