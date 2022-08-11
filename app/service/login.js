@@ -4,7 +4,7 @@
  * @Author: 王鹏
  * @Date: 2022-04-09 16:18:28
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-08-11 11:21:25
+ * @LastEditTime: 2022-08-11 16:10:42
  */
 'use strict';
 
@@ -33,10 +33,20 @@ class UserService extends Service {
         data: '账号状态异常，请联系管理员恢复',
       };
     }
-    const adminRoleItem = await this.app.mysql.get('admin_role', { aid: userItem.id });
-    const roleItem = await this.app.mysql.get('role', { id: adminRoleItem.rid });
-    const rolePermissionsItem = await this.app.mysql.get('role_permissions', { rid: roleItem.id });
-    const permissionsItem = await this.app.mysql.select('permissions', { where: { id: rolePermissionsItem.pid.split(',') } });
+    const adminRoleItem = await this.app.mysql.get('admin_role', {
+      aid: userItem.id,
+    });
+    const roleItem = await this.app.mysql.get('role', {
+      id: adminRoleItem.rid,
+    });
+    const rolePermissionsItem = await this.app.mysql.get('role_permissions', {
+      rid: roleItem.id,
+    });
+    const permissionsItem = rolePermissionsItem.pid ? await this.app.mysql.select('permissions', {
+      where: {
+        id: rolePermissionsItem.pid.split(','),
+      },
+    }) : '';
     // 获取字典对象
     const dictList = await this.app.mysql.select('dictList');
 
@@ -44,7 +54,7 @@ class UserService extends Service {
     return {
       type: 1,
       data: userItem,
-      auth: permissionsItem[0],
+      auth: permissionsItem ? permissionsItem[0] : [],
       dict: dictList,
     };
   }
@@ -52,7 +62,10 @@ class UserService extends Service {
   async createUser(obj) {
     const result = await this.app.mysql.insert('admin', obj);
     if (result.affectedRows === 1) {
-      await this.app.mysql.insert('admin_role', { aid: result.insertId, rid: 1 });
+      await this.app.mysql.insert('admin_role', {
+        aid: result.insertId,
+        rid: 1,
+      });
     }
     // 判断更新成功
     return result.affectedRows === 1 ? result.insertId : false;
