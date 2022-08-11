@@ -7,7 +7,7 @@
  * @LastEditors: WangPeng
  * @LastEditTime: 2022-07-12 14:59:56
  */
-const whiteList = [ '/vcode', '/login' ];
+const whiteList = [ '/vcode', '/login', '/createUser' ];
 const jwt = require('jsonwebtoken');
 
 module.exports = () => {

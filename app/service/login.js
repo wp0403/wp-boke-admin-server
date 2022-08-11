@@ -4,13 +4,14 @@
  * @Author: 王鹏
  * @Date: 2022-04-09 16:18:28
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-07-08 11:30:34
+ * @LastEditTime: 2022-08-11 11:21:25
  */
 'use strict';
 
 const Service = require('egg').Service;
 
 class UserService extends Service {
+  // 判断用户名和密码是否正确
   async getUser({ username, password }) {
     const userItem = await this.app.mysql.get('admin', { username });
 
@@ -20,26 +21,41 @@ class UserService extends Service {
         data: '该用户不存在',
       };
     }
+    if (userItem.password !== password) {
+      return {
+        type: 3,
+        data: '密码错误，请重新输入',
+      };
+    }
+    if (userItem.state !== 1) {
+      return {
+        type: 3,
+        data: '账号状态异常，请联系管理员恢复',
+      };
+    }
     const adminRoleItem = await this.app.mysql.get('admin_role', { aid: userItem.id });
     const roleItem = await this.app.mysql.get('role', { id: adminRoleItem.rid });
     const rolePermissionsItem = await this.app.mysql.get('role_permissions', { rid: roleItem.id });
     const permissionsItem = await this.app.mysql.select('permissions', { where: { id: rolePermissionsItem.pid.split(',') } });
     // 获取字典对象
     const dictList = await this.app.mysql.select('dictList');
-    if (userItem.password === password) {
-      delete userItem.password;
-      return {
-        type: 1,
-        data: userItem,
-        auth: permissionsItem[0],
-        dict: dictList,
-      };
-    }
-    return {
-      type: 3,
-      data: '密码错误，请重新输入',
-    };
 
+    delete userItem.password;
+    return {
+      type: 1,
+      data: userItem,
+      auth: permissionsItem[0],
+      dict: dictList,
+    };
+  }
+  // 注册用户
+  async createUser(obj) {
+    const result = await this.app.mysql.insert('admin', obj);
+    if (result.affectedRows === 1) {
+      await this.app.mysql.insert('admin_role', { aid: result.insertId, rid: 1 });
+    }
+    // 判断更新成功
+    return result.affectedRows === 1 ? result.insertId : false;
   }
 }
 

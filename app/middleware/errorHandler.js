@@ -4,8 +4,8 @@
  * @version: 1.1.1
  * @Author: 张三
  * @Date: 2021-07-10 11:25:23
- * @LastEditors: 李四
- * @LastEditTime: 2021-07-10 11:25:35
+ * @LastEditors: WangPeng
+ * @LastEditTime: 2022-08-11 15:43:50
  */
 module.exports = () => {
   return async function errorHandler(ctx, next) {

@@ -7,6 +7,7 @@ module.exports = app => {
   const { router, controller } = app;
   router.get('/vcode', controller.verificationCode.createVCode); // 登陆验证码接口
   router.post('/login', controller.login.index); // 登陆接口
+  router.post('/createUser', controller.login.createUser); // 注册接口
   /**
    * 博文请求接口
    */
@@ -42,4 +43,6 @@ module.exports = app => {
    * 用户接口
    */
   router.get('/searchUserList', controller.user.searchUserList); // 根据关键字查询用户列表
+  router.get('/getUserList', controller.user.getUserList); // 根据关键字查询用户列表
+  router.put('/putUserToExamine', controller.user.putUserToExamine); // 修改用户状态
 };
