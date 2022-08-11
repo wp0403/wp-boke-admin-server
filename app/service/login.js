@@ -4,7 +4,7 @@
  * @Author: 王鹏
  * @Date: 2022-04-09 16:18:28
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-08-11 16:10:42
+ * @LastEditTime: 2022-08-11 16:25:36
  */
 'use strict';
 
@@ -42,11 +42,13 @@ class UserService extends Service {
     const rolePermissionsItem = await this.app.mysql.get('role_permissions', {
       rid: roleItem.id,
     });
-    const permissionsItem = rolePermissionsItem.pid ? await this.app.mysql.select('permissions', {
-      where: {
-        id: rolePermissionsItem.pid.split(','),
-      },
-    }) : '';
+    const permissionsItem = rolePermissionsItem.pid
+      ? await this.app.mysql.select('permissions', {
+        where: {
+          id: rolePermissionsItem.pid.split(','),
+        },
+      })
+      : '';
     // 获取字典对象
     const dictList = await this.app.mysql.select('dictList');
 
@@ -54,7 +56,7 @@ class UserService extends Service {
     return {
       type: 1,
       data: userItem,
-      auth: permissionsItem ? permissionsItem[0] : [],
+      auth: permissionsItem && permissionsItem[0] ? permissionsItem[0] : [],
       dict: dictList,
     };
   }
