@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-06-21 11:10:33
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-07-15 10:05:20
+ * @LastEditTime: 2022-08-18 10:44:17
  */
 'use strict';
 
@@ -20,8 +20,8 @@ class ClassifyService extends Service {
       desc,
       isDelete = 1,
       type,
-      sortKey = 'selected',
-      sortOrder = 'desc',
+      sortKey,
+      sortOrder,
       author,
       page = 1,
       page_size = 10,
@@ -116,7 +116,9 @@ class ClassifyService extends Service {
     content.push(isDelete);
 
     // 开启排序
-    if (sortKey && sortOrder) {
+    if (!sortKey || !sortOrder) {
+      sql += ' order by selected desc,  time_str desc';
+    } else {
       sql += ` order by ${sortKey} ${sortOrder}`;
     }
 

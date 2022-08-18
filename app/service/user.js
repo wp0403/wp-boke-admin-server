@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-07-06 11:40:04
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-08-11 15:32:58
+ * @LastEditTime: 2022-08-18 10:19:00
  */
 'use strict';
 
@@ -97,7 +97,7 @@ class UserService extends Service {
       },
     };
   }
-  // 修改博文审核状态
+  // 修改用户审核状态
   async _putUserToExamine(obj) {
     const { id, state } = obj;
     // 查找对应的数据
