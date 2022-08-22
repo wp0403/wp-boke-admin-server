@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-07-06 11:40:04
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-08-18 10:19:00
+ * @LastEditTime: 2022-08-22 14:58:40
  */
 'use strict';
 
@@ -12,8 +12,15 @@ const Service = require('egg').Service;
 
 class UserService extends Service {
   async _searchUserList(keyword) {
+    if (!keyword) {
+      return await this.app.mysql.select('admin', {
+        columns: [ 'id', 'name', 'username', 'email', 'phone', 'website' ],
+      });
+    }
+
     return await this.app.mysql.query(
-      'select id,name,username,email,phone,website from admin where name like ?', [ `%${keyword}%` ]
+      'select id,name,username,email,phone,website from admin where name like ?',
+      [ `%${keyword}%` ]
     );
   }
   // 获取用户列表
@@ -29,7 +36,8 @@ class UserService extends Service {
       page_size = 10,
     } = obj;
 
-    let sql = 'select id,name,username,email,phone,website,create_time,last_edit_time,state,role_id from admin';
+    let sql =
+      'select id,name,username,email,phone,website,create_time,last_edit_time,state,role_id from admin';
     let num = 'select count(*) from admin';
     const content = []; // 参数
     let isMore = false; // 是否有多个查询参数
