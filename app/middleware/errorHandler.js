@@ -5,7 +5,7 @@
  * @Author: 张三
  * @Date: 2021-07-10 11:25:23
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-08-11 15:43:50
+ * @LastEditTime: 2022-08-23 12:45:52
  */
 module.exports = () => {
   return async function errorHandler(ctx, next) {
@@ -14,7 +14,6 @@ module.exports = () => {
     } catch (err) {
       // 所有的异常都在 app 上触发一个 error 事件，框架会记录一条错误日志
       ctx.app.emit('error', err, ctx);
-
       const status = err.status || 500;
       // 生产环境时 500 错误的详细错误内容不返回给客户端，因为可能包含敏感信息
       const error = status === 500 && ctx.app.config.env === 'prod'

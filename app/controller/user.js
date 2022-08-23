@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-07-06 11:39:35
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-08-11 15:39:42
+ * @LastEditTime: 2022-08-22 16:41:49
  */
 'use strict';
 
@@ -17,13 +17,6 @@ class UserController extends Controller {
     // 解构参数
     const { keyword } = ctx.request.query;
 
-    if (!keyword) {
-      ctx.body = {
-        code: 304,
-        msg: '请输入关键字搜索',
-      };
-      return;
-    }
     await this.service.user
       ._searchUserList(keyword)
       .then(data => {

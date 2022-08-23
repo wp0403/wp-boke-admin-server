@@ -38,7 +38,7 @@ module.exports = app => {
    * cos对象储存接口
    */
   router.get('/sts', controller.cosServer.index); // 获取腾讯云cos签名
-  router.get('/stsCosKey', controller.cosServer.getCosKey); // 获取腾讯云cos的用户密钥
+  // router.get('/stsCosKey', controller.cosServer.getCosKey); // 获取腾讯云cos的用户密钥 安全问题弃用
   /**
    * 用户接口
    */
