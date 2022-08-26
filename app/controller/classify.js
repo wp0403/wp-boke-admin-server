@@ -4,11 +4,12 @@
  * @Author: WangPeng
  * @Date: 2022-06-21 11:09:45
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-07-14 17:44:10
+ * @LastEditTime: 2022-08-26 11:33:10
  */
 'use strict';
 
 const Controller = require('egg').Controller;
+const jwt = require('jsonwebtoken');
 
 class ClassifyController extends Controller {
   // 获取博文列表
@@ -248,6 +249,48 @@ class ClassifyController extends Controller {
       ctx.body = {
         code: 305,
         msg: '新增博文失败',
+        // data: e,
+      };
+    }
+  }
+  // 删除博文
+  async deleteClassifyDetails() {
+    const { ctx } = this;
+
+    const { id } = ctx.request.body;
+
+    try {
+      const token = ctx.request.header.authorization;
+      const userInfo = jwt.verify(token, 'wp0403');
+      const arr = await ctx.service.auth.index(userInfo.data.userId);
+
+      if (!arr.includes(3)) {
+        ctx.body = {
+          code: 305,
+          msg: '您暂无该权限，请联系管理员操作',
+          // data: e,
+        };
+        return;
+      }
+
+      const isEdit = await ctx.service.classify._deleteClassifyDetails(id);
+
+      if (isEdit) {
+        ctx.body = {
+          code: 200,
+          msg: '博文删除成功',
+        };
+      } else {
+        ctx.body = {
+          code: 305,
+          msg: '博文删除失败',
+          // data: e,
+        };
+      }
+    } catch (e) {
+      ctx.body = {
+        code: 305,
+        msg: '博文删除失败',
         // data: e,
       };
     }

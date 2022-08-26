@@ -4,7 +4,7 @@
  * @Author: 王鹏
  * @Date: 2022-04-08 23:05:36
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-08-11 11:21:35
+ * @LastEditTime: 2022-08-26 11:23:51
  */
 'use strict';
 
@@ -48,7 +48,7 @@ class LoginController extends Controller {
     });
 
     if (type === 1) {
-      const token = ctx.helper.loginToken({ username, userId: auth.id }, 7200);
+      const token = ctx.helper.loginToken({ username: data.username, userId: data.id }, 7200);
       const dictObj = {};
       if (dict) {
         dict.forEach(

@@ -21,6 +21,7 @@ module.exports = app => {
     '/createClassifyDetails',
     controller.classify.createClassifyDetails
   ); // 新增博文
+  router.delete('/deleteClassifyDetails', controller.classify.deleteClassifyDetails); // 删除博文
   /**
    * 旅行日记请求接口
    */

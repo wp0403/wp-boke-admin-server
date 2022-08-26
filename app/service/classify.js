@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-06-21 11:10:33
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-08-18 10:44:17
+ * @LastEditTime: 2022-08-26 09:46:54
  */
 'use strict';
 
@@ -192,6 +192,14 @@ class ClassifyService extends Service {
     const result = await this.app.mysql.insert('Bowen', obj);
     // 判断更新成功
     return result.affectedRows === 1 ? result.insertId : false;
+  }
+  // 删除博文
+  async _deleteClassifyDetails(id) {
+    const result = await this.app.mysql.delete('Bowen', {
+      id,
+    });
+    // 判断删除成功
+    return result.affectedRows === 1;
   }
 }
 

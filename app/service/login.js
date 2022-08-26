@@ -56,7 +56,7 @@ class UserService extends Service {
     return {
       type: 1,
       data: userItem,
-      auth: permissionsItem && permissionsItem[0] ? permissionsItem[0] : [],
+      auth: permissionsItem && permissionsItem[0] ? permissionsItem : [],
       dict: dictList,
     };
   }
