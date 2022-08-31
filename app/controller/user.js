@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-07-06 11:39:35
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-08-22 16:41:49
+ * @LastEditTime: 2022-08-29 15:23:16
  */
 'use strict';
 
@@ -93,6 +93,73 @@ class UserController extends Controller {
       ctx.body = {
         code: 305,
         msg: '用户状态修改失败',
+        // data: e,
+      };
+    }
+  }
+  // 根据id获取用户详情
+  async getUserDetails() {
+    const { ctx } = this;
+
+    // 解构参数
+    const { id } = ctx.request.query;
+
+    if (!id) {
+      ctx.body = {
+        code: 304,
+        msg: '缺少用户id',
+      };
+      return;
+    }
+
+    try {
+      const obj = await this.service.user._getUserDetails(id);
+
+      ctx.body = {
+        code: 200,
+        data: obj,
+        msg: '查询用户详情成功',
+      };
+    } catch (e) {
+      ctx.body = {
+        code: 305,
+        msg: '查询用户详情失败',
+      };
+    }
+  }
+  // 更新用户详情数据
+  async putUserDetails() {
+    const { ctx } = this;
+
+    const obj = ctx.request.body;
+
+    if (!obj) {
+      // eslint-disable-next-line no-return-assign
+      return (ctx.body = {
+        code: 304,
+        msg: '缺失详情数据',
+      });
+    }
+
+    try {
+      const isEdit = await ctx.service.user._putUserDetails(obj);
+
+      if (isEdit) {
+        ctx.body = {
+          code: 200,
+          msg: '用户详情数据修改成功',
+        };
+      } else {
+        ctx.body = {
+          code: 305,
+          msg: '用户详情数据修改失败',
+          // data: e,
+        };
+      }
+    } catch (e) {
+      ctx.body = {
+        code: 305,
+        msg: '用户详情数据修改失败',
         // data: e,
       };
     }
