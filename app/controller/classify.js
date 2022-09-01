@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-06-21 11:09:45
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-08-26 11:33:10
+ * @LastEditTime: 2022-08-31 18:29:37
  */
 'use strict';
 
@@ -220,7 +220,6 @@ class ClassifyController extends Controller {
     const { ctx } = this;
 
     const obj = ctx.request.body;
-
     if (!obj || !Object.keys(obj)) {
       // eslint-disable-next-line no-return-assign
       return (ctx.body = {
@@ -231,7 +230,6 @@ class ClassifyController extends Controller {
 
     try {
       const data = await ctx.service.classify._createClassifyDetails(obj);
-
       if (data) {
         ctx.body = {
           code: 200,
@@ -246,6 +244,7 @@ class ClassifyController extends Controller {
         };
       }
     } catch (e) {
+      console.log(e);
       ctx.body = {
         code: 305,
         msg: '新增博文失败',

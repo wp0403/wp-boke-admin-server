@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-07-06 11:40:04
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-08-29 15:22:14
+ * @LastEditTime: 2022-09-01 11:47:43
  */
 'use strict';
 
@@ -144,7 +144,7 @@ class UserService extends Service {
   }
   // 修改用户详情
   async _putUserDetails(obj) {
-    const result = await this.app.mysql.update('admin', obj);
+    const result = await this.app.mysql.update('admin', { id: obj.id, ...obj });
 
     // 判断更新成功
     return result.affectedRows === 1;

@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-07-06 11:39:35
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-08-29 15:23:16
+ * @LastEditTime: 2022-09-01 11:49:56
  */
 'use strict';
 
@@ -140,7 +140,6 @@ class UserController extends Controller {
         msg: '缺失详情数据',
       });
     }
-
     try {
       const isEdit = await ctx.service.user._putUserDetails(obj);
 
