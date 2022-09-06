@@ -35,6 +35,15 @@ module.exports = app => {
   router.put('/putSecretDetails', controller.secret.putSecretDetails); // 更新树洞详情
   router.put('/putSecretToExamine', controller.secret.putSecretToExamine); // 修改树洞审核状态
   router.post('/createSecretDetails', controller.secret.createSecretDetails); // 新增树洞
+  router.delete('/deleteSecretDetails', controller.secret.deleteSecretDetails); // 删除树洞
+  /**
+   * 网站时间轴
+   */
+  router.get('/getTimeAxisList', controller.timeAxis.getList); // 获取列表接口
+  router.put('/putTimeAxisDetails', controller.timeAxis.putTimeAxisDetails); // 更新详情
+  router.put('/putTimeAxisToExamine', controller.timeAxis.putTimeAxisToExamine); // 修改审核状态
+  router.post('/createTimeAxisDetails', controller.timeAxis.createTimeAxisDetails); // 新增
+  router.delete('/deleteTimeAxisDetails', controller.timeAxis.deleteTimeAxisDetails); // 删除
   /**
    * cos对象储存接口
    */
@@ -48,4 +57,10 @@ module.exports = app => {
   router.put('/putUserToExamine', controller.user.putUserToExamine); // 修改用户状态
   router.get('/getUserDetails', controller.user.getUserDetails); // 根据用户id获取用户详情信息
   router.put('/putUserDetails', controller.user.putUserDetails); // 更新用户详情
+  /**
+   * 数据操作
+   */
+  router.put('/putImgList', controller.resources.insertImgs); // 批量写入图片数据
+  router.put('/putImg', controller.resources.insertImg); // 写入图片数据
+  router.get('/getImgList', controller.resources.getImgList); // 获取图片列表
 };

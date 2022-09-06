@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-06-21 11:09:45
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-08-31 18:29:37
+ * @LastEditTime: 2022-09-05 16:15:41
  */
 'use strict';
 
@@ -153,7 +153,7 @@ class ClassifyController extends Controller {
     }
 
     try {
-      const isEdit = await ctx.service.classify._putClassifyDetails(obj);
+      const isEdit = await ctx.service.classify._putClassifyDetails({ ...obj, type: 3 });
 
       if (isEdit) {
         ctx.body = {
@@ -221,11 +221,11 @@ class ClassifyController extends Controller {
 
     const obj = ctx.request.body;
     if (!obj || !Object.keys(obj)) {
-      // eslint-disable-next-line no-return-assign
-      return (ctx.body = {
+      ctx.body = {
         code: 304,
         msg: '缺失详情数据',
-      });
+      };
+      return;
     }
 
     try {

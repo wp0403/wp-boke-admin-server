@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-06-21 11:10:33
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-08-18 10:39:58
+ * @LastEditTime: 2022-09-04 18:57:47
  */
 'use strict';
 
@@ -136,6 +136,14 @@ class SecretService extends Service {
     const result = await this.app.mysql.insert('secretList', obj);
     // 判断更新成功
     return result.affectedRows === 1 ? result.insertId : false;
+  }
+  // 删除树洞
+  async _deleteSecretDetails(id) {
+    const result = await this.app.mysql.delete('secretList', {
+      id,
+    });
+      // 判断删除成功
+    return result.affectedRows === 1;
   }
 }
 
