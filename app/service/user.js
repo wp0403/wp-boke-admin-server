@@ -137,6 +137,7 @@ class UserService extends Service {
         'aboutTags',
         'secret_guide',
         'about_page',
+        'img',
       ],
     });
 
