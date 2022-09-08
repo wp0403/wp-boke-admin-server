@@ -63,8 +63,8 @@ class UserService extends Service {
   // 注册用户
   async createUser(obj) {
     const result = await this.app.mysql.insert('admin', obj);
-    const result1 = await this.app.mysql.insert('userData', {});
-    if (result.affectedRows === 1 && result1 === 1) {
+    if (result.affectedRows === 1) {
+      console.log(result.insertId);
       await this.app.mysql.insert('admin_role', {
         aid: result.insertId,
         rid: 1,
