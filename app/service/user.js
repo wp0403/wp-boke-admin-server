@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-07-06 11:40:04
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-09-01 11:47:43
+ * @LastEditTime: 2022-09-16 16:21:12
  */
 'use strict';
 
@@ -14,12 +14,12 @@ class UserService extends Service {
   async _searchUserList(keyword) {
     if (!keyword) {
       return await this.app.mysql.select('admin', {
-        columns: [ 'id', 'name', 'username', 'email', 'phone', 'website' ],
+        columns: [ 'id', 'name', 'username', 'email', 'phone', 'website', 'uid' ],
       });
     }
 
     return await this.app.mysql.query(
-      'select id,name,username,email,phone,website from admin where name like ?',
+      'select id,name,username,email,phone,website,uid from admin where name like ?',
       [ `%${keyword}%` ]
     );
   }
@@ -37,7 +37,7 @@ class UserService extends Service {
     } = obj;
 
     let sql =
-      'select id,name,username,email,phone,website,create_time,last_edit_time,state,role_id from admin';
+      'select id,name,username,email,phone,website,create_time,last_edit_time,state,role_id,uid from admin';
     let num = 'select count(*) from admin';
     const content = []; // 参数
     let isMore = false; // 是否有多个查询参数
@@ -138,6 +138,7 @@ class UserService extends Service {
         'secret_guide',
         'about_page',
         'img',
+        'uid',
       ],
     });
 

@@ -4,7 +4,7 @@
  * @Author: 王鹏
  * @Date: 2022-04-08 23:05:36
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-09-08 17:17:45
+ * @LastEditTime: 2022-09-19 09:41:35
  */
 'use strict';
 
@@ -48,12 +48,15 @@ class LoginController extends Controller {
     });
 
     if (type === 1) {
-      const token = ctx.helper.loginToken({ username: data.username, userId: data.id }, 7200);
+      const token = ctx.helper.loginToken(
+        { username: data.username, userId: data.id },
+        7200
+      );
       const dictObj = {};
       if (dict) {
         dict.forEach(
           // eslint-disable-next-line
-          item => (dictObj[item.key] = eval('(' + item.value + ')'))
+          (item) => (dictObj[item.key] = eval("(" + item.value + ")"))
         );
       }
       ctx.body = {
@@ -100,7 +103,12 @@ class LoginController extends Controller {
     }
 
     try {
-      const data = await this.service.login.createUser({ name: username, username, password: md5(password) });
+      const data = await this.service.login.createUser({
+        name: username,
+        username,
+        password: md5(password),
+        uid: md5(`${new Date()}${username}`),
+      });
 
       if (data) {
         ctx.body = {
