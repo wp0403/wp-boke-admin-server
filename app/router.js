@@ -26,6 +26,7 @@ module.exports = app => {
    * 旅行日记请求接口
    */
   router.get('/getItineraryList', controller.itinerary.getList); // 获取旅行日记列表接口
+  router.get('/getItineraryDetails', controller.itinerary.getItineraryDetails); // 获取博文详情
   /**
    * 树洞请求接口
    */

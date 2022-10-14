@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-06-24 10:56:08
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-07-06 11:04:12
+ * @LastEditTime: 2022-10-03 09:08:14
  */
 'use strict';
 
@@ -29,6 +29,46 @@ class ItineraryController extends Controller {
         msg: '旅行日记列表数据获取失败',
       };
     });
+  }
+
+  // 获取详情数据
+  async getItineraryDetails() {
+    const { ctx } = this;
+
+    const { id } = ctx.request.query;
+
+    if (!id) {
+      // eslint-disable-next-line no-return-assign
+      return (ctx.body = {
+        code: 304,
+        msg: '缺失详情id',
+      });
+    }
+
+    try {
+      const itineraryDetails = await ctx.service.itinerary._getItinerary(id);
+      if (itineraryDetails) {
+        // eslint-disable-next-line no-eval
+        itineraryDetails.imgs = eval('(' + itineraryDetails.imgs + ')');
+        ctx.body = {
+          code: 200,
+          msg: '详情数据获取成功',
+          data: itineraryDetails,
+        };
+      } else {
+        ctx.body = {
+          code: 305,
+          msg: '该数据已过期',
+          // data: e,
+        };
+      }
+    } catch (e) {
+      ctx.body = {
+        code: 305,
+        msg: '详情数据获取失败',
+        // data: e,
+      };
+    }
   }
 }
 

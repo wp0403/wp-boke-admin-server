@@ -116,12 +116,12 @@ class ClassifyController extends Controller {
     }
 
     try {
-      const classifyList = await ctx.service.classify._getClassifyDetails(id);
-      if (classifyList) {
+      const classifyDetail = await ctx.service.classify._getClassifyDetails(id);
+      if (classifyDetail) {
         ctx.body = {
           code: 200,
           msg: '博文详情数据获取成功',
-          data: classifyList,
+          data: classifyDetail,
         };
       } else {
         ctx.body = {

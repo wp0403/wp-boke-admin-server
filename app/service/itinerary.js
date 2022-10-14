@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-06-24 10:56:32
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-06-24 11:47:02
+ * @LastEditTime: 2022-10-03 08:58:01
  */
 'use strict';
 
@@ -90,6 +90,11 @@ class ItineraryService extends Service {
         total: bowenListNum[0]['count(*)'],
       },
     };
+  }
+
+  // 获取详情
+  async _getItinerary(id) {
+    return await this.app.mysql.get('playList', { id });
   }
 }
 
