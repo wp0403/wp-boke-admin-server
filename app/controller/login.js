@@ -4,7 +4,7 @@
  * @Author: 王鹏
  * @Date: 2022-04-08 23:05:36
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-09-19 09:41:35
+ * @LastEditTime: 2022-10-17 10:21:09
  */
 'use strict';
 
@@ -49,7 +49,7 @@ class LoginController extends Controller {
 
     if (type === 1) {
       const token = ctx.helper.loginToken(
-        { username: data.username, userId: data.id },
+        { username: data.username, uid: data.uid },
         7200
       );
       const dictObj = {};

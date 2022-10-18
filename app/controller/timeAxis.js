@@ -4,20 +4,28 @@
  * @Author: WangPeng
  * @Date: 2022-09-05 14:43:42
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-09-05 16:12:30
+ * @LastEditTime: 2022-10-18 18:47:44
  */
 'use strict';
 
 const Controller = require('egg').Controller;
-const jwt = require('jsonwebtoken');
 
 class TimeAxisController extends Controller {
   async getList() {
     const { ctx } = this;
     // 解构参数
-    const { type, content, page, page_size } = ctx.request.query;
+    const { type, content, author_id, page, page_size } = ctx.request.query;
 
-    await this.service.timeAxis.getList({ type, content, page, page_size }).then(data => {
+    const isAuth = await this.service.auth.isAuth('read@classify');
+
+    let authorId = author_id;
+
+    if (!isAuth) {
+      const { data: { uid } } = this.ctx.session.userInfo;
+      authorId = uid;
+    }
+
+    await this.service.timeAxis.getList({ type, content, author_id: authorId, page, page_size }).then(data => {
       ctx.body = {
         code: 200,
         msg: '网站时间轴列表数据获取成功',
@@ -45,7 +53,22 @@ class TimeAxisController extends Controller {
       };
     }
 
+    const isAuth = await this.service.auth.isAuth('edit@classify');
+    const { data: { uid } } = this.ctx.session.userInfo;
+    if (obj.author_id !== uid && !isAuth) {
+      ctx.body = {
+        code: 305,
+        msg: '您暂无该权限，请联系管理员操作',
+        // data: e,
+      };
+      return;
+    }
+
     try {
+      const isUpdate = await this.service.auth.isAuth('update@time');
+
+      !isUpdate && delete obj.create_time;
+      !isUpdate && delete obj.update_time;
       const isEdit = await ctx.service.timeAxis._putTimeAxisDetails({ ...obj, type: 3 });
 
       if (isEdit) {
@@ -83,6 +106,17 @@ class TimeAxisController extends Controller {
     }
 
     try {
+      const isAuth = await this.service.auth.isAuth('toExamine@timeAxis');
+
+      if (!isAuth) {
+        ctx.body = {
+          code: 305,
+          msg: '您暂无该权限，请联系管理员操作',
+          // data: e,
+        };
+        return;
+      }
+
       const isEdit = await ctx.service.timeAxis._putTimeAxisToExamine({
         id,
         type,
@@ -114,6 +148,17 @@ class TimeAxisController extends Controller {
 
     const obj = ctx.request.body;
 
+    const isAuth = await this.service.auth.isAuth('create@timeAxis');
+
+    if (!isAuth) {
+      ctx.body = {
+        code: 305,
+        msg: '您暂无该权限，请联系管理员操作',
+        // data: e,
+      };
+      return;
+    }
+
     if (!obj || !Object.keys(obj)) {
       // eslint-disable-next-line no-return-assign
       return ctx.body = {
@@ -123,6 +168,10 @@ class TimeAxisController extends Controller {
     }
 
     try {
+      const isUpdate = await this.service.auth.isAuth('update@time');
+
+      !isUpdate && delete obj.create_time;
+      !isUpdate && delete obj.update_time;
       const data = await ctx.service.timeAxis._createTimeAxisDetails(obj);
 
       if (data) {
@@ -154,11 +203,9 @@ class TimeAxisController extends Controller {
     const { id } = ctx.request.body;
 
     try {
-      const token = ctx.request.header.authorization;
-      const userInfo = jwt.verify(token, 'wp0403');
-      const arr = await ctx.service.auth.index(userInfo.data.userId);
+      const isAuth = await this.service.auth.isAuth('delete@timeAxis');
 
-      if (!arr.includes(3)) {
+      if (!isAuth) {
         ctx.body = {
           code: 305,
           msg: '您暂无该权限，请联系管理员操作',

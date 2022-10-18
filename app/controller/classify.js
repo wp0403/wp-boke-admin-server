@@ -4,12 +4,11 @@
  * @Author: WangPeng
  * @Date: 2022-06-21 11:09:45
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-09-05 16:15:41
+ * @LastEditTime: 2022-10-18 18:44:03
  */
 'use strict';
 
 const Controller = require('egg').Controller;
-const jwt = require('jsonwebtoken');
 
 class ClassifyController extends Controller {
   // 获取博文列表
@@ -24,9 +23,19 @@ class ClassifyController extends Controller {
       type,
       isDelete,
       author,
+      author_id,
       page,
       page_size,
     } = ctx.request.query;
+
+    const isAuth = await this.service.auth.isAuth('read@classify');
+
+    let authorId = author_id;
+
+    if (!isAuth) {
+      const { data: { uid } } = this.ctx.session.userInfo;
+      authorId = uid;
+    }
 
     await this.service.classify
       .getList({
@@ -37,6 +46,7 @@ class ClassifyController extends Controller {
         type,
         isDelete,
         author,
+        author_id: authorId,
         page,
         page_size,
       })
@@ -61,6 +71,17 @@ class ClassifyController extends Controller {
     // 解构参数
     const { id, selected } = ctx.request.body;
 
+    const isAuth = await this.service.auth.isAuth('edit@classify');
+
+    if (!isAuth) {
+      ctx.body = {
+        code: 305,
+        msg: '您暂无该权限，请联系管理员操作',
+        // data: e,
+      };
+      return;
+    }
+
     await this.service.classify
       .isSelectedFun({ id, selected })
       .then(data => {
@@ -83,6 +104,17 @@ class ClassifyController extends Controller {
     const { ctx } = this;
     // 解构参数
     const { id, isDelete } = ctx.request.body;
+
+    const isAuth = await this.service.auth.isAuth('edit@classify');
+
+    if (!isAuth) {
+      ctx.body = {
+        code: 305,
+        msg: '您暂无该权限，请联系管理员操作',
+        // data: e,
+      };
+      return;
+    }
 
     await this.service.classify
       .delBowenList({ id, isDelete })
@@ -117,6 +149,19 @@ class ClassifyController extends Controller {
 
     try {
       const classifyDetail = await ctx.service.classify._getClassifyDetails(id);
+
+      const isAuth = await this.service.auth.isAuth('read@classify');
+      const { data: { uid } } = this.ctx.session.userInfo;
+
+      if (classifyDetail.author_id !== uid && !isAuth) {
+        ctx.body = {
+          code: 305,
+          msg: '您暂无该权限，请联系管理员操作',
+          // data: e,
+        };
+        return;
+      }
+
       if (classifyDetail) {
         ctx.body = {
           code: 200,
@@ -153,6 +198,22 @@ class ClassifyController extends Controller {
     }
 
     try {
+      const isAuth = await this.service.auth.isAuth('edit@classify');
+      const { data: { uid } } = this.ctx.session.userInfo;
+      if (obj.author_id !== uid && !isAuth) {
+        ctx.body = {
+          code: 305,
+          msg: '您暂无该权限，请联系管理员操作',
+          // data: e,
+        };
+        return;
+      }
+
+      const isUpdate = await this.service.auth.isAuth('update@time');
+
+      !isUpdate && delete obj.time_str;
+      !isUpdate && delete obj.last_edit_time;
+
       const isEdit = await ctx.service.classify._putClassifyDetails({ ...obj, type: 3 });
 
       if (isEdit) {
@@ -190,6 +251,17 @@ class ClassifyController extends Controller {
     }
 
     try {
+      const isAuth = await this.service.auth.isAuth('toExamine@classify');
+
+      if (!isAuth) {
+        ctx.body = {
+          code: 305,
+          msg: '您暂无该权限，请联系管理员操作',
+          // data: e,
+        };
+        return;
+      }
+
       const isEdit = await ctx.service.classify._putClassifyToExamine({
         id,
         type,
@@ -219,6 +291,17 @@ class ClassifyController extends Controller {
   async createClassifyDetails() {
     const { ctx } = this;
 
+    const isAuth = await this.service.auth.isAuth('create@classify');
+
+    if (!isAuth) {
+      ctx.body = {
+        code: 305,
+        msg: '您暂无该权限，请联系管理员操作',
+        // data: e,
+      };
+      return;
+    }
+
     const obj = ctx.request.body;
     if (!obj || !Object.keys(obj)) {
       ctx.body = {
@@ -229,6 +312,10 @@ class ClassifyController extends Controller {
     }
 
     try {
+      const isUpdate = await this.service.auth.isAuth('update@time');
+
+      !isUpdate && delete obj.time_str;
+      !isUpdate && delete obj.last_edit_time;
       const data = await ctx.service.classify._createClassifyDetails(obj);
       if (data) {
         ctx.body = {
@@ -259,11 +346,9 @@ class ClassifyController extends Controller {
     const { id } = ctx.request.body;
 
     try {
-      const token = ctx.request.header.authorization;
-      const userInfo = jwt.verify(token, 'wp0403');
-      const arr = await ctx.service.auth.index(userInfo.data.userId);
+      const isAuth = await this.service.auth.isAuth('delete@classify');
 
-      if (!arr.includes(3)) {
+      if (!isAuth) {
         ctx.body = {
           code: 305,
           msg: '您暂无该权限，请联系管理员操作',

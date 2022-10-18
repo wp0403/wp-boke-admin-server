@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-06-21 11:10:33
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-08-31 18:27:19
+ * @LastEditTime: 2022-10-17 11:45:49
  */
 'use strict';
 
@@ -23,6 +23,7 @@ class ClassifyService extends Service {
       sortKey,
       sortOrder,
       author,
+      author_id,
       page = 1,
       page_size = 10,
     } = obj;
@@ -54,6 +55,18 @@ class ClassifyService extends Service {
         num += ' WHERE author LIKE ?';
       }
       content.push('%' + author + '%');
+      isMore = true;
+    }
+    if (author_id) {
+      if (isMore) {
+        // true代表有多个参数
+        sql += 'and author_id IN (?)'; // and是两个条件都必须满足，or是或的关系
+        num += 'and author_id IN (?)';
+      } else {
+        sql += ' WHERE author_id IN (?)';
+        num += ' WHERE author_id IN (?)';
+      }
+      content.push(author_id);
       isMore = true;
     }
     if (classify_id) {

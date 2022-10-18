@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-09-06 09:39:32
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-09-06 15:20:25
+ * @LastEditTime: 2022-10-17 12:31:14
  */
 'use strict';
 
@@ -13,8 +13,9 @@ const Service = require('egg').Service;
 class ResourcesService extends Service {
   // 批量写入图片
   async _insertImgs(v) {
-    const values = v.map(item => ([ item.id, item.name, item.url, item.updateTime, item.size ]));
-    const sql = 'INSERT INTO img_list (id,name,url,updateTime,size) VALUES ?';
+    const { data } = this.ctx.session.userInfo;
+    const values = v.map(item => ([ item.id, item.name, item.url, item.updateTime, item.size, data.username, data.uid ]));
+    const sql = 'INSERT INTO img_list (id,name,url,updateTime,size,author,author_id) VALUES ?';
     const res = await this.app.mysql.query(
       sql, [ values ]
     );
@@ -27,6 +28,7 @@ class ResourcesService extends Service {
       sortKey,
       sortOrder,
       name,
+      author_id,
       page = 1,
       page_size = 10,
     } = obj;
@@ -34,7 +36,7 @@ class ResourcesService extends Service {
     let sql = 'select * from img_list';
     let num = 'select count(*) from img_list';
     const content = []; // 参数
-    // let isMore = false; // 是否有多个查询参数
+    let isMore = false; // 是否有多个查询参数
     /**
      * @模糊查询-量大的时候效率低
      * select * from user where name like ? % 内容 %
@@ -46,9 +48,20 @@ class ResourcesService extends Service {
       sql += ' where name like ?';
       num += ' where name like ?';
       content.push('%' + name + '%');
-    //   isMore = true;
+      isMore = true;
     }
-
+    if (author_id) {
+      if (isMore) {
+        // true代表有多个参数
+        sql += 'and author_id IN (?)'; // and是两个条件都必须满足，or是或的关系
+        num += 'and author_id IN (?)';
+      } else {
+        sql += ' WHERE author_id IN (?)';
+        num += ' WHERE author_id IN (?)';
+      }
+      content.push(author_id);
+      isMore = true;
+    }
     // 开启排序
     if (!sortKey || !sortOrder) {
       sql += ' order by id desc,create_time desc';

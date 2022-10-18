@@ -4,19 +4,29 @@
  * @Author: WangPeng
  * @Date: 2022-06-24 10:56:08
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-10-03 09:08:14
+ * @LastEditTime: 2022-10-17 12:28:08
  */
 'use strict';
 
 const Controller = require('egg').Controller;
 
 class ItineraryController extends Controller {
+  // 获取旅行日记列表
   async getList() {
     const { ctx } = this;
     // 解构参数
-    const { place, title, content, timeData, page, page_size } = ctx.request.query;
+    const { place, title, content, timeData, author_id, page, page_size } = ctx.request.query;
 
-    await this.service.itinerary.getList({ place, title, content, timeData, page, page_size }).then(data => {
+    const isAuth = await this.service.auth.isAuth('read@play');
+
+    let authorId = author_id;
+
+    if (!isAuth) {
+      const { data: { uid } } = this.ctx.session.userInfo;
+      authorId = uid;
+    }
+
+    await this.service.itinerary.getList({ place, title, content, timeData, author_id: authorId, page, page_size }).then(data => {
       ctx.body = {
         code: 200,
         msg: '旅行日记列表数据获取成功',
@@ -47,6 +57,17 @@ class ItineraryController extends Controller {
 
     try {
       const itineraryDetails = await ctx.service.itinerary._getItinerary(id);
+      const isAuth = await this.service.auth.isAuth('read@play');
+      const { data: { uid } } = this.ctx.session.userInfo;
+
+      if (itineraryDetails.author_id !== uid && !isAuth) {
+        ctx.body = {
+          code: 305,
+          msg: '您暂无该权限，请联系管理员操作',
+          // data: e,
+        };
+        return;
+      }
       if (itineraryDetails) {
         // eslint-disable-next-line no-eval
         itineraryDetails.imgs = eval('(' + itineraryDetails.imgs + ')');

@@ -4,7 +4,7 @@
  * @Author: 王鹏
  * @Date: 2022-04-09 16:18:28
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-08-29 10:48:08
+ * @LastEditTime: 2022-10-17 12:14:14
  */
 'use strict';
 
@@ -34,7 +34,7 @@ class UserService extends Service {
       };
     }
     const adminRoleItem = await this.app.mysql.get('admin_role', {
-      aid: userItem.id,
+      aid: userItem.uid,
     });
     const roleItem = await this.app.mysql.get('role', {
       id: adminRoleItem.rid,
@@ -56,7 +56,7 @@ class UserService extends Service {
     return {
       type: 1,
       data: userItem,
-      auth: permissionsItem && permissionsItem[0] ? permissionsItem : [],
+      auth: (permissionsItem && permissionsItem[0]) ? permissionsItem : [],
       dict: dictList,
     };
   }
@@ -64,10 +64,10 @@ class UserService extends Service {
   async createUser(obj) {
     const result = await this.app.mysql.insert('admin', obj);
     if (result.affectedRows === 1) {
-      console.log(result.insertId);
+      console.log(result);
       await this.app.mysql.insert('admin_role', {
-        aid: result.insertId,
-        rid: 1,
+        aid: obj.uid,
+        rid: 3,
       });
     }
     // 判断更新成功

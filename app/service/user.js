@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-07-06 11:40:04
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-09-16 16:21:12
+ * @LastEditTime: 2022-10-17 15:23:00
  */
 'use strict';
 
@@ -113,6 +113,14 @@ class UserService extends Service {
     // 判断更新成功
     return result.affectedRows === 1;
   }
+  // 修改用户角色
+  async _putUserState(obj) {
+    const { id, role_id } = obj;
+    // 查找对应的数据
+    const result = await this.app.mysql.update('admin', { id, role_id: +role_id }); // 更新 admin 表中的记录
+    // 判断更新成功
+    return result.affectedRows === 1;
+  }
   // 获取用户详情
   async _getUserDetails(id) {
     const arr = await this.app.mysql.select('admin', {
@@ -146,7 +154,7 @@ class UserService extends Service {
   }
   // 修改用户详情
   async _putUserDetails(obj) {
-    const result = await this.app.mysql.update('admin', { id: obj.id, ...obj });
+    const result = await this.app.mysql.update('admin', obj);
 
     // 判断更新成功
     return result.affectedRows === 1;

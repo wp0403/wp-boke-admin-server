@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-09-05 14:40:45
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-09-05 16:11:34
+ * @LastEditTime: 2022-10-17 12:51:20
  */
 'use strict';
 
@@ -14,7 +14,7 @@ class TimeAxisService extends Service {
   // 获取时间轴列表
   async getList(obj) {
     // 解构参数
-    const { sortKey, sortOrder, type, content, page = 1, page_size = 10 } = obj;
+    const { sortKey, sortOrder, type, author_id, content, page = 1, page_size = 10 } = obj;
 
     let sql = 'select * from time_axis';
     let num = 'select count(*) from time_axis';
@@ -31,6 +31,18 @@ class TimeAxisService extends Service {
       sql += ' where content like ?';
       num += ' where content like ?';
       cont.push('%' + content + '%');
+      isMore = true;
+    }
+    if (author_id) {
+      if (isMore) {
+        // true代表有多个参数
+        sql += 'and author_id IN (?)'; // and是两个条件都必须满足，or是或的关系
+        num += 'and author_id IN (?)';
+      } else {
+        sql += ' WHERE author_id IN (?)';
+        num += ' WHERE author_id IN (?)';
+      }
+      content.push(author_id);
       isMore = true;
     }
     if (type) {

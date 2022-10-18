@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-07-06 11:39:35
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-09-01 11:49:56
+ * @LastEditTime: 2022-10-18 18:49:12
  */
 'use strict';
 
@@ -40,6 +40,17 @@ class UserController extends Controller {
     // 解构参数
     const { username, state, email } = ctx.request.query;
 
+    const isAuth = await this.service.auth.isAuth('read@user');
+
+    if (!isAuth) {
+      ctx.body = {
+        code: 305,
+        msg: '您暂无该权限，请联系管理员操作',
+        // data: e,
+      };
+      return;
+    }
+
     await this.service.user
       ._getUserList({ username, state, email })
       .then(data => {
@@ -72,6 +83,17 @@ class UserController extends Controller {
     }
 
     try {
+      const isAuth = await this.service.auth.isAuth('toExamine@user');
+
+      if (!isAuth) {
+        ctx.body = {
+          code: 305,
+          msg: '您暂无该权限，请联系管理员操作',
+          // data: e,
+        };
+        return;
+      }
+
       const isEdit = await ctx.service.user._putUserToExamine({
         id,
         state,
@@ -86,6 +108,57 @@ class UserController extends Controller {
         ctx.body = {
           code: 305,
           msg: '用户状态修改失败',
+          // data: e,
+        };
+      }
+    } catch (e) {
+      ctx.body = {
+        code: 305,
+        msg: '用户状态修改失败',
+        // data: e,
+      };
+    }
+  }
+  // 修改用户角色
+  async putUserState() {
+    const { ctx } = this;
+
+    const { id, role_id } = ctx.request.body;
+
+    if (!id || !role_id) {
+      // eslint-disable-next-line no-return-assign
+      return (ctx.body = {
+        code: 304,
+        msg: '缺失数据',
+      });
+    }
+
+    try {
+      const isAuth = await this.service.auth.isAuth('edit@user');
+
+      if (!isAuth) {
+        ctx.body = {
+          code: 305,
+          msg: '您暂无该权限，请联系管理员操作',
+          // data: e,
+        };
+        return;
+      }
+
+      const isEdit = await ctx.service.user._putUserState({
+        id,
+        role_id,
+      });
+
+      if (isEdit) {
+        ctx.body = {
+          code: 200,
+          msg: '用户角色修改成功',
+        };
+      } else {
+        ctx.body = {
+          code: 305,
+          msg: '用户角色修改失败',
           // data: e,
         };
       }
@@ -114,6 +187,19 @@ class UserController extends Controller {
 
     try {
       const obj = await this.service.user._getUserDetails(id);
+      const isAuth = await this.service.auth.isAuth('read@user');
+      const {
+        data: { uid },
+      } = this.ctx.session.userInfo;
+
+      if (obj.uid !== uid && !isAuth) {
+        ctx.body = {
+          code: 305,
+          msg: '您暂无该权限，请联系管理员操作',
+          // data: e,
+        };
+        return;
+      }
 
       ctx.body = {
         code: 200,
@@ -141,6 +227,25 @@ class UserController extends Controller {
       });
     }
     try {
+      const isAuth = await this.service.auth.isAuth('edit@user');
+      const {
+        data: { uid },
+      } = this.ctx.session.userInfo;
+
+      if (obj.uid !== uid && !isAuth) {
+        ctx.body = {
+          code: 305,
+          msg: '您暂无该权限，请联系管理员操作',
+          // data: e,
+        };
+        return;
+      }
+
+      const isUpdate = await this.service.auth.isAuth('update@time');
+
+      !isUpdate && delete obj.create_time;
+      !isUpdate && delete obj.last_edit_time;
+
       const isEdit = await ctx.service.user._putUserDetails(obj);
 
       if (isEdit) {

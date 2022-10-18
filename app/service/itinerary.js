@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-06-24 10:56:32
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-10-03 08:58:01
+ * @LastEditTime: 2022-10-17 12:00:22
  */
 'use strict';
 
@@ -13,7 +13,7 @@ const Service = require('egg').Service;
 class ItineraryService extends Service {
   async getList(obj) {
     // 解构参数 timeData,
-    const { place, title, content, page = 1, page_size = 10 } = obj;
+    const { place, title, author_id, content, page = 1, page_size = 10 } = obj;
     let sql = 'select * from playList';
     let num = 'select count(*) from playList';
     const cont = []; // 参数
@@ -41,6 +41,18 @@ class ItineraryService extends Service {
         num += ' WHERE place LIKE ?';
       }
       cont.push('%' + place + '%');
+      isMore = true;
+    }
+    if (author_id) {
+      if (isMore) {
+        // true代表有多个参数
+        sql += 'and author_id IN (?)'; // and是两个条件都必须满足，or是或的关系
+        num += 'and author_id IN (?)';
+      } else {
+        sql += ' WHERE author_id IN (?)';
+        num += ' WHERE author_id IN (?)';
+      }
+      content.push(author_id);
       isMore = true;
     }
     if (content) {
