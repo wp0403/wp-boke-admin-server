@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-06-21 11:09:45
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-10-18 18:44:03
+ * @LastEditTime: 2022-10-19 23:11:49
  */
 'use strict';
 
@@ -71,7 +71,7 @@ class ClassifyController extends Controller {
     // 解构参数
     const { id, selected } = ctx.request.body;
 
-    const isAuth = await this.service.auth.isAuth('edit@classify');
+    const isAuth = await this.service.auth.isAuth('toExamine@classify');
 
     if (!isAuth) {
       ctx.body = {
@@ -103,11 +103,11 @@ class ClassifyController extends Controller {
   async delBowenList() {
     const { ctx } = this;
     // 解构参数
-    const { id, isDelete } = ctx.request.body;
+    const { id, isDelete, authorId } = ctx.request.body;
 
     const isAuth = await this.service.auth.isAuth('edit@classify');
-
-    if (!isAuth) {
+    const { data: { uid } } = this.ctx.session.userInfo;
+    if (authorId !== uid && !isAuth) {
       ctx.body = {
         code: 305,
         msg: '您暂无该权限，请联系管理员操作',
@@ -212,7 +212,7 @@ class ClassifyController extends Controller {
       const isUpdate = await this.service.auth.isAuth('update@time');
 
       !isUpdate && delete obj.time_str;
-      !isUpdate && delete obj.last_edit_time;
+      !isUpdate && (obj.last_edit_time = new Date());
 
       const isEdit = await ctx.service.classify._putClassifyDetails({ ...obj, type: 3 });
 

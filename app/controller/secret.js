@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-06-23 16:31:01
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-10-18 18:46:43
+ * @LastEditTime: 2022-10-19 23:16:22
  */
 'use strict';
 
@@ -68,7 +68,7 @@ class SecretController extends Controller {
     // 解构参数
     const { id, isTop } = ctx.request.body;
 
-    const isAuth = await this.service.auth.isAuth('edit@secret');
+    const isAuth = await this.service.auth.isAuth('toExamine@secret');
 
     if (!isAuth) {
       ctx.body = {
@@ -100,11 +100,13 @@ class SecretController extends Controller {
   async delSecretList() {
     const { ctx } = this;
     // 解构参数
-    const { id, isDelete } = ctx.request.body;
+    const { id, isDelete, authorId } = ctx.request.body;
 
-    const isAuth = await this.service.auth.isAuth('edit@secret');
-
-    if (!isAuth) {
+    const isAuth = await this.service.auth.isAuth('toExamine@secret');
+    const {
+      data: { uid },
+    } = this.ctx.session.userInfo;
+    if (authorId !== uid && !isAuth) {
       ctx.body = {
         code: 305,
         msg: '您暂无该权限，请联系管理员操作',

@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-07-06 11:39:35
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-10-18 18:49:12
+ * @LastEditTime: 2022-10-19 21:38:52
  */
 'use strict';
 
@@ -123,9 +123,9 @@ class UserController extends Controller {
   async putUserState() {
     const { ctx } = this;
 
-    const { id, role_id } = ctx.request.body;
+    const { uid, role_id } = ctx.request.body;
 
-    if (!id || !role_id) {
+    if (!uid || !role_id) {
       // eslint-disable-next-line no-return-assign
       return (ctx.body = {
         code: 304,
@@ -146,7 +146,7 @@ class UserController extends Controller {
       }
 
       const isEdit = await ctx.service.user._putUserState({
-        id,
+        uid,
         role_id,
       });
 
@@ -244,7 +244,7 @@ class UserController extends Controller {
       const isUpdate = await this.service.auth.isAuth('update@time');
 
       !isUpdate && delete obj.create_time;
-      !isUpdate && delete obj.last_edit_time;
+      !isUpdate && (obj.last_edit_time = new Date());
 
       const isEdit = await ctx.service.user._putUserDetails(obj);
 

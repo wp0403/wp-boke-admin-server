@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-07-06 11:40:04
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-10-17 15:23:00
+ * @LastEditTime: 2022-10-19 21:47:37
  */
 'use strict';
 
@@ -107,19 +107,45 @@ class UserService extends Service {
   }
   // 修改用户审核状态
   async _putUserToExamine(obj) {
-    const { id, state } = obj;
+    const { uid, state } = obj;
     // 查找对应的数据
-    const result = await this.app.mysql.update('admin', { id, state: +state }); // 更新 admin 表中的记录
+    const result = await this.app.mysql.update(
+      'admin',
+      { state: +state },
+      {
+        where: {
+          uid,
+        },
+      }
+    ); // 更新 admin 表中的记录
     // 判断更新成功
     return result.affectedRows === 1;
   }
   // 修改用户角色
   async _putUserState(obj) {
-    const { id, role_id } = obj;
+    const { uid, role_id } = obj;
     // 查找对应的数据
-    const result = await this.app.mysql.update('admin', { id, role_id: +role_id }); // 更新 admin 表中的记录
+    const result = await this.app.mysql.update(
+      'admin',
+      { role_id: +role_id },
+      {
+        where: {
+          uid,
+        },
+      }
+    ); // 更新 admin 表中的记录
+    // 修改用户关联角色表
+    const result1 = await this.app.mysql.update(
+      'admin_role',
+      { aid: uid, rid: +role_id },
+      {
+        where: {
+          aid: uid,
+        },
+      }
+    );
     // 判断更新成功
-    return result.affectedRows === 1;
+    return result.affectedRows === 1 && result1.affectedRows === 1;
   }
   // 获取用户详情
   async _getUserDetails(id) {
