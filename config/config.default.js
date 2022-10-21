@@ -13,7 +13,7 @@ module.exports = appInfo => {
   const config = (exports = {});
 
   // use for cookie sign key, should change to your own and keep security
-  config.keys = appInfo.name + '_1649383511859_2091';
+  config.keys = '****';
 
   // add your middleware config here
   config.middleware = [ 'jwt', 'gzip', 'notfoundHandler', 'errorHandler' ];
@@ -71,15 +71,15 @@ module.exports = appInfo => {
       // 单数据库信息配置
       client: {
         // host
-        host: '101.43.203.116',
+        host: '**.**.**.**',
         // 端口号
-        port: '3306',
+        port: '****',
         // 用户名
-        user: 'wp0403',
+        user: '**',
         // 密码
-        password: 'Wp201314',
+        password: '**',
         // 数据库名
-        database: 'bokemaster',
+        database: '**',
       },
       // 是否加载到 app 上，默认开启
       app: true,
@@ -88,9 +88,9 @@ module.exports = appInfo => {
     },
     redis: {
       client: {
-        host: '101.43.203.116',
-        port: '6379',
-        password: 'Wp201314',
+        host: '**.**.**.**',
+        port: '****',
+        password: '****',
         db: 0,
       },
     },
