@@ -4,7 +4,7 @@
  * @Author: WangPeng
  * @Date: 2022-07-06 11:39:35
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-10-19 21:38:52
+ * @LastEditTime: 2022-10-21 10:21:55
  */
 'use strict';
 
@@ -17,28 +17,41 @@ class UserController extends Controller {
     // 解构参数
     const { keyword } = ctx.request.query;
 
-    await this.service.user
-      ._searchUserList(keyword)
-      .then(data => {
-        ctx.body = {
-          code: 200,
-          msg: '获取用户列表成功',
-          data,
-        };
-      })
-      .catch(e => {
-        ctx.body = {
-          code: 300,
-          msg: '获取用户列表失败',
-        };
-        console.log(e);
+    await this.service.redis
+      .get('userList_search')
+      .then(async data => {
+        if (data) {
+          ctx.body = {
+            code: 200,
+            msg: '获取用户列表成功',
+            ...data,
+          };
+          return;
+        }
+        await this.service.user
+          ._searchUserList(keyword)
+          .then(data => {
+            this.service.redis.set('userList_search', data);
+            ctx.body = {
+              code: 200,
+              msg: '获取用户列表成功',
+              data,
+            };
+          })
+          .catch(e => {
+            ctx.body = {
+              code: 300,
+              msg: '获取用户列表失败',
+            };
+            console.log(e);
+          });
       });
   }
   // 获取用户列表
   async getUserList() {
     const { ctx } = this;
     // 解构参数
-    const { username, state, email } = ctx.request.query;
+    const { username, page, pageSize, state, email } = ctx.request.query;
 
     const isAuth = await this.service.auth.isAuth('read@user');
 
@@ -51,30 +64,43 @@ class UserController extends Controller {
       return;
     }
 
-    await this.service.user
-      ._getUserList({ username, state, email })
-      .then(data => {
-        ctx.body = {
-          code: 200,
-          msg: '获取用户列表成功',
-          ...data,
-        };
-      })
-      .catch(e => {
-        ctx.body = {
-          code: 300,
-          msg: '获取用户列表失败',
-        };
-        console.log(e);
+    await this.service.redis
+      .get(`userList_${page}_${pageSize}`)
+      .then(async data => {
+        if (data) {
+          ctx.body = {
+            code: 200,
+            msg: '获取用户列表成功',
+            ...data,
+          };
+          return;
+        }
+        await this.service.user
+          ._getUserList({ username, page, page_size: pageSize, state, email })
+          .then(data => {
+            this.service.redis.set(`userList_${page}_${pageSize}`, data);
+            ctx.body = {
+              code: 200,
+              msg: '获取用户列表成功',
+              ...data,
+            };
+          })
+          .catch(e => {
+            ctx.body = {
+              code: 300,
+              msg: '获取用户列表失败',
+            };
+            console.log(e);
+          });
       });
   }
   // 修改用户状态
   async putUserToExamine() {
     const { ctx } = this;
 
-    const { id, state } = ctx.request.body;
+    const { uid, state } = ctx.request.body;
 
-    if (!id || !state) {
+    if (!uid || !state) {
       // eslint-disable-next-line no-return-assign
       return (ctx.body = {
         code: 304,
@@ -95,11 +121,12 @@ class UserController extends Controller {
       }
 
       const isEdit = await ctx.service.user._putUserToExamine({
-        id,
+        uid,
         state,
       });
 
       if (isEdit) {
+        this.service.redis.delKey('userList');
         ctx.body = {
           code: 200,
           msg: '用户状态修改成功',
@@ -151,6 +178,7 @@ class UserController extends Controller {
       });
 
       if (isEdit) {
+        this.service.redis.delKey('userList');
         ctx.body = {
           code: 200,
           msg: '用户角色修改成功',
@@ -249,6 +277,7 @@ class UserController extends Controller {
       const isEdit = await ctx.service.user._putUserDetails(obj);
 
       if (isEdit) {
+        this.service.redis.delKey('user');
         ctx.body = {
           code: 200,
           msg: '用户详情数据修改成功',

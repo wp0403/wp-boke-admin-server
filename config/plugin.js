@@ -4,7 +4,7 @@
  * @Author: 王鹏
  * @Date: 2022-04-08 23:05:36
  * @LastEditors: WangPeng
- * @LastEditTime: 2022-06-15 11:46:59
+ * @LastEditTime: 2022-10-20 15:12:05
  */
 'use strict';
 
@@ -21,5 +21,9 @@ module.exports = {
   mysql: {
     enable: true,
     package: 'egg-mysql',
+  },
+  redis: {
+    enable: true,
+    package: 'egg-redis',
   },
 };
